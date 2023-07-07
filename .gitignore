@@ -20,4 +20,9 @@
 # Go workspace file
 go.work
 
+# Test directories
 libsTest/
+
+# Environment variables(Config files), Logs
+*.env
+*.log
