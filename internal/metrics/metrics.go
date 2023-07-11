@@ -2,7 +2,6 @@ package metrics
 
 import (
 	"expvar"
-	"log"
 	"math/rand"
 	"runtime"
 
@@ -11,12 +10,12 @@ import (
 
 type Metric map[string]uint64
 
-func Get() (metric Metric) {
+func Get() (metric Metric, err error) {
 	memstatsFunc := expvar.Get("memstats").(expvar.Func)
 	memstats := memstatsFunc().(runtime.MemStats)
 	v, err := mem.VirtualMemory()
 	if err != nil {
-		log.Fatal(err)
+		return
 	}
 
 	metric = make(map[string]uint64)
