@@ -7,19 +7,20 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/logger"
+	"github.com/google/uuid"
 )
 
 type Server struct {
-	App     *fiber.App
-	Config  config.Config
-	Metrics []metrics.Metric
+	App          *fiber.App
+	Config       config.Config
+	UsersMetrics map[uuid.UUID][]metrics.Metrics
 }
 
 func NewServer(config config.Config) (server *Server) {
 	server = &Server{
-		App:     fiber.New(),
-		Config:  config,
-		Metrics: make([]metrics.Metric, 0),
+		App:          fiber.New(),
+		Config:       config,
+		UsersMetrics: make(map[uuid.UUID][]metrics.Metrics),
 	}
 	server.App.Use(logger.New(logger.Config{
 		Format: config.Logger_fmt,

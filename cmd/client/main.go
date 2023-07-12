@@ -8,12 +8,12 @@ import (
 )
 
 func main() {
-	cfg, err := config.LoadConfig("../../config/client")
+	cfg, err := config.LoadConfig("./config/client")
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	user := client.NewUser(cfg)
+	user, err := client.NewUser(cfg)
 	if err != nil {
 		log.Fatal(err)
 	}

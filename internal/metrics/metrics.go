@@ -4,13 +4,14 @@ import (
 	"expvar"
 	"math/rand"
 	"runtime"
+	"time"
 
 	"github.com/shirou/gopsutil/v3/mem"
 )
 
-type Metric map[string]uint64
+type Metrics map[string]any
 
-func Get() (metric Metric, err error) {
+func Get() (metrics Metrics, err error) {
 	memstatsFunc := expvar.Get("memstats").(expvar.Func)
 	memstats := memstatsFunc().(runtime.MemStats)
 	v, err := mem.VirtualMemory()
@@ -18,45 +19,46 @@ func Get() (metric Metric, err error) {
 		return
 	}
 
-	metric = make(map[string]uint64)
+	metrics = make(map[string]any)
 
-	metric["BuckHashSys"] = memstats.BuckHashSys
-	metric["Frees"] = memstats.Frees
-	metric["GCCPUFraction"] = uint64(memstats.GCCPUFraction)
-	metric["GCSys"] = memstats.GCSys
+	metrics["BuckHashSys"] = memstats.BuckHashSys
+	metrics["Frees"] = memstats.Frees
+	metrics["GCCPUFraction"] = memstats.GCCPUFraction
+	metrics["GCSys"] = memstats.GCSys
 
-	metric["HeapAlloc"] = memstats.HeapAlloc
-	metric["HeapIdle"] = memstats.HeapIdle
-	metric["HeapInuse"] = memstats.HeapInuse
-	metric["HeapObjects"] = memstats.HeapObjects
-	metric["HeapReleased"] = memstats.HeapReleased
-	metric["HeapSys"] = memstats.HeapSys
+	metrics["HeapAlloc"] = memstats.HeapAlloc
+	metrics["HeapIdle"] = memstats.HeapIdle
+	metrics["HeapInuse"] = memstats.HeapInuse
+	metrics["HeapObjects"] = memstats.HeapObjects
+	metrics["HeapReleased"] = memstats.HeapReleased
+	metrics["HeapSys"] = memstats.HeapSys
 
-	metric["LastGC"] = memstats.LastGC
-	metric["Lookups"] = memstats.Lookups
+	metrics["LastGC"] = memstats.LastGC
+	metrics["Lookups"] = memstats.Lookups
 
-	metric["MCacheInuse"] = memstats.MCacheInuse
-	metric["MCacheSys"] = memstats.MCacheSys
-	metric["MSpanInuse"] = memstats.MSpanInuse
-	metric["MSpanSys"] = memstats.MSpanSys
+	metrics["MCacheInuse"] = memstats.MCacheInuse
+	metrics["MCacheSys"] = memstats.MCacheSys
+	metrics["MSpanInuse"] = memstats.MSpanInuse
+	metrics["MSpanSys"] = memstats.MSpanSys
 
-	metric["Mallocs"] = memstats.Mallocs
-	metric["NextGC"] = memstats.NextGC
-	metric["NumForcedGC"] = uint64(memstats.NumForcedGC)
-	metric["NumGC"] = uint64(memstats.NumGC)
-	metric["OtherSys"] = memstats.OtherSys
-	metric["PauseTotalNs"] = memstats.PauseTotalNs
+	metrics["Mallocs"] = memstats.Mallocs
+	metrics["NextGC"] = memstats.NextGC
+	metrics["NumForcedGC"] = memstats.NumForcedGC
+	metrics["NumGC"] = memstats.NumGC
+	metrics["OtherSys"] = memstats.OtherSys
+	metrics["PauseTotalNs"] = memstats.PauseTotalNs
 
-	metric["StackInuse"] = memstats.StackInuse
-	metric["StackSys"] = memstats.StackSys
+	metrics["StackInuse"] = memstats.StackInuse
+	metrics["StackSys"] = memstats.StackSys
 
-	metric["Alloc"] = memstats.Alloc
-	metric["Sys"] = memstats.Sys
-	metric["TotalAlloc"] = memstats.TotalAlloc
-	metric["RandomValue"] = rand.Uint64()
+	metrics["Alloc"] = memstats.Alloc
+	metrics["Sys"] = memstats.Sys
+	metrics["TotalAlloc"] = memstats.TotalAlloc
+	rand.Seed(time.Now().UnixNano())
+	metrics["RandomValue"] = rand.Uint64()
 
 	// Memory
-	metric["TotalMemory"] = v.Total
-	metric["FreeMemory"] = v.Free
+	metrics["TotalMemory"] = v.Total
+	metrics["FreeMemory"] = v.Free
 	return
 }
