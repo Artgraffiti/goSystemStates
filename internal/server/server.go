@@ -10,11 +10,6 @@ import (
 	"github.com/google/uuid"
 )
 
-type UserMetrics struct {
-	uuid.UUID
-	metricArr []metrics.MetricMap
-}
-
 type Server struct {
 	App          *fiber.App
 	Config       config.Config
