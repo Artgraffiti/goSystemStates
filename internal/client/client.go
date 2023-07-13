@@ -16,9 +16,10 @@ type User struct {
 }
 
 func NewUser(config config.Config) (user *User, err error) {
-	user_id, err := uuid.Parse(config.UUID)
+	user_uuid, err := uuid.Parse(config.UUID)
+	log.Printf("Initialize user(uuid): %s", user_uuid)
 	user = &User{
-		uuid:   user_id,
+		uuid:   user_uuid,
 		Client: fiber.AcquireClient(),
 		Config: config,
 	}
@@ -34,16 +35,15 @@ func (user *User) SendMetrics() (err error) {
 	}
 
 	request := map[uuid.UUID]metrics.Metrics{user.uuid: userMetrics}
-	log.Println(request)
 	err = agent.JSON(request).Parse()
 	if err != nil {
 		return
 	}
 
-	_, _, errs := agent.String()
+	statusCode, _, errs := agent.String()
 	if errs != nil {
 		return errs[0]
 	}
-	log.Printf("Sending metric by user_id: %s\n", user.uuid.String())
+	log.Printf("Sending metric by user_id: %s\n With status code: %d", user.uuid.String(), statusCode)
 	return
 }

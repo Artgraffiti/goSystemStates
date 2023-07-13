@@ -12,7 +12,7 @@ func (server *Server) Hi(ctx *fiber.Ctx) (err error) {
 	return ctx.SendString("Hi")
 }
 
-func (server *Server) addMetric(ctx *fiber.Ctx) (err error) {
+func (server *Server) addMetrics(ctx *fiber.Ctx) (err error) {
 	var data map[uuid.UUID]metrics.Metrics
 
 	err = json.Unmarshal([]byte(ctx.Body()), &data)
@@ -30,6 +30,15 @@ func (server *Server) addMetric(ctx *fiber.Ctx) (err error) {
 	}
 
 	return
+}
+
+func (server *Server) metricsByUUID(ctx *fiber.Ctx) (err error) {
+	user_uuid, err := uuid.Parse(ctx.Params("uuid"))
+	if err != nil {
+		return
+	}
+
+	return ctx.JSON(server.UsersMetrics[user_uuid])
 }
 
 func (server *Server) getAllMetrics(ctx *fiber.Ctx) (err error) {
