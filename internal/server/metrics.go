@@ -1,8 +1,8 @@
 package server
 
 import (
+	"GSS/internal/client"
 	"GSS/internal/metrics"
-	"encoding/json"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
@@ -13,20 +13,17 @@ func (server *Server) Hi(ctx *fiber.Ctx) (err error) {
 }
 
 func (server *Server) addMetrics(ctx *fiber.Ctx) (err error) {
-	var data map[uuid.UUID]metrics.Metrics
+	var userMetricMap client.UserMetricMap
 
-	err = json.Unmarshal([]byte(ctx.Body()), &data)
-	if err != nil {
-		return
+	if err := ctx.BodyParser(&userMetricMap); err != nil {
+		return err
 	}
 
-	for user_id, user_metrics := range data {
-		_, ok := server.UsersMetrics[user_id]
-		if ok {
-			server.UsersMetrics[user_id] = append(server.UsersMetrics[user_id], user_metrics)
-		} else {
-			server.UsersMetrics[user_id] = []metrics.Metrics{user_metrics}
-		}
+	_, ok := server.UsersMetrics[userMetricMap.UUID]
+	if ok {
+		server.UsersMetrics[userMetricMap.UUID] = append(server.UsersMetrics[userMetricMap.UUID], userMetricMap.MetricMap)
+	} else {
+		server.UsersMetrics[userMetricMap.UUID] = []metrics.MetricMap{userMetricMap.MetricMap}
 	}
 
 	return

@@ -18,7 +18,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	err = user.SendMetrics()
+	err = user.SendMetricMap()
 	if err != nil {
 		log.Fatal(err)
 	}

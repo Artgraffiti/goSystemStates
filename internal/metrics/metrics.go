@@ -9,9 +9,21 @@ import (
 	"github.com/shirou/gopsutil/v3/mem"
 )
 
-type Metrics map[string]any
+type MetricMapUint32 map[string]uint32
 
-func Get() (metrics Metrics, err error) {
+type MetricMapUint64 map[string]uint64
+
+type MetricMapFloat64 map[string]float64
+
+type MetricMap struct {
+	Timestamp        int64            `json:"timestamp"`
+	MetricMapUint32  MetricMapUint32  `json:"uint32"`
+	MetricMapUint64  MetricMapUint64  `json:"uint64"`
+	MetricMapFloat64 MetricMapFloat64 `json:"float64"`
+}
+
+func Get() (mMap MetricMap, err error) {
+	rand.Seed(time.Now().UnixNano())
 	memstatsFunc := expvar.Get("memstats").(expvar.Func)
 	memstats := memstatsFunc().(runtime.MemStats)
 	v, err := mem.VirtualMemory()
@@ -19,46 +31,52 @@ func Get() (metrics Metrics, err error) {
 		return
 	}
 
-	metrics = make(map[string]any)
+	mMap = MetricMap{
+		Timestamp: time.Now().UnixNano(),
+		MetricMapUint32: MetricMapUint32{
+			"NumForcedGC": memstats.NumForcedGC,
+			"NumGC":       memstats.NumGC,
+		},
+		MetricMapUint64: MetricMapUint64{
+			"BuckHashSys": memstats.BuckHashSys,
+			"Frees":       memstats.Frees,
+			"GCSys":       memstats.GCSys,
 
-	metrics["BuckHashSys"] = memstats.BuckHashSys
-	metrics["Frees"] = memstats.Frees
-	metrics["GCCPUFraction"] = memstats.GCCPUFraction
-	metrics["GCSys"] = memstats.GCSys
+			"HeapAlloc":    memstats.HeapAlloc,
+			"HeapIdle":     memstats.HeapIdle,
+			"HeapInuse":    memstats.HeapInuse,
+			"HeapObjects":  memstats.HeapObjects,
+			"HeapReleased": memstats.HeapReleased,
+			"HeapSys":      memstats.HeapSys,
 
-	metrics["HeapAlloc"] = memstats.HeapAlloc
-	metrics["HeapIdle"] = memstats.HeapIdle
-	metrics["HeapInuse"] = memstats.HeapInuse
-	metrics["HeapObjects"] = memstats.HeapObjects
-	metrics["HeapReleased"] = memstats.HeapReleased
-	metrics["HeapSys"] = memstats.HeapSys
+			"LastGC":  memstats.LastGC,
+			"Lookups": memstats.Lookups,
 
-	metrics["LastGC"] = memstats.LastGC
-	metrics["Lookups"] = memstats.Lookups
+			"MCacheInuse": memstats.MCacheInuse,
+			"MCacheSys":   memstats.MCacheSys,
+			"MSpanInuse":  memstats.MSpanInuse,
+			"MSpanSys":    memstats.MSpanSys,
 
-	metrics["MCacheInuse"] = memstats.MCacheInuse
-	metrics["MCacheSys"] = memstats.MCacheSys
-	metrics["MSpanInuse"] = memstats.MSpanInuse
-	metrics["MSpanSys"] = memstats.MSpanSys
+			"Mallocs":      memstats.Mallocs,
+			"NextGC":       memstats.NextGC,
+			"OtherSys":     memstats.OtherSys,
+			"PauseTotalNs": memstats.PauseTotalNs,
 
-	metrics["Mallocs"] = memstats.Mallocs
-	metrics["NextGC"] = memstats.NextGC
-	metrics["NumForcedGC"] = memstats.NumForcedGC
-	metrics["NumGC"] = memstats.NumGC
-	metrics["OtherSys"] = memstats.OtherSys
-	metrics["PauseTotalNs"] = memstats.PauseTotalNs
+			"StackInuse": memstats.StackInuse,
+			"StackSys":   memstats.StackSys,
 
-	metrics["StackInuse"] = memstats.StackInuse
-	metrics["StackSys"] = memstats.StackSys
+			"Alloc":       memstats.Alloc,
+			"Sys":         memstats.Sys,
+			"TotalAlloc":  memstats.TotalAlloc,
+			"RandomValue": rand.Uint64(),
 
-	metrics["Alloc"] = memstats.Alloc
-	metrics["Sys"] = memstats.Sys
-	metrics["TotalAlloc"] = memstats.TotalAlloc
-	rand.Seed(time.Now().UnixNano())
-	metrics["RandomValue"] = rand.Uint64()
-
-	// Memory
-	metrics["TotalMemory"] = v.Total
-	metrics["FreeMemory"] = v.Free
+			// Memory
+			"TotalMemory": v.Total,
+			"FreeMemory":  v.Free,
+		},
+		MetricMapFloat64: MetricMapFloat64{
+			"GCCPUFraction": memstats.GCCPUFraction,
+		},
+	}
 	return
 }

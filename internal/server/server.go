@@ -10,17 +10,22 @@ import (
 	"github.com/google/uuid"
 )
 
+type UserMetrics struct {
+	uuid.UUID
+	metricArr []metrics.MetricMap
+}
+
 type Server struct {
 	App          *fiber.App
 	Config       config.Config
-	UsersMetrics map[uuid.UUID][]metrics.Metrics
+	UsersMetrics map[uuid.UUID][]metrics.MetricMap
 }
 
 func NewServer(config config.Config) (server *Server) {
 	server = &Server{
 		App:          fiber.New(),
 		Config:       config,
-		UsersMetrics: make(map[uuid.UUID][]metrics.Metrics),
+		UsersMetrics: make(map[uuid.UUID][]metrics.MetricMap),
 	}
 	server.App.Use(logger.New(logger.Config{
 		Format: config.Logger_fmt,
