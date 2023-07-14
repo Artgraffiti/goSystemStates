@@ -15,14 +15,14 @@ type MetricMapUint64 map[string]uint64
 
 type MetricMapFloat64 map[string]float64
 
-type MetricMap struct {
+type MetricStorage struct {
 	Timestamp        int64            `json:"timestamp"`
 	MetricMapUint32  MetricMapUint32  `json:"uint32"`
 	MetricMapUint64  MetricMapUint64  `json:"uint64"`
 	MetricMapFloat64 MetricMapFloat64 `json:"float64"`
 }
 
-func Get() (mMap MetricMap, err error) {
+func Get() (mMap MetricStorage, err error) {
 	rand.Seed(time.Now().UnixNano())
 	memstatsFunc := expvar.Get("memstats").(expvar.Func)
 	memstats := memstatsFunc().(runtime.MemStats)
@@ -31,7 +31,7 @@ func Get() (mMap MetricMap, err error) {
 		return
 	}
 
-	mMap = MetricMap{
+	mMap = MetricStorage{
 		Timestamp: time.Now().Unix(),
 		MetricMapUint32: MetricMapUint32{
 			"NumForcedGC": memstats.NumForcedGC,

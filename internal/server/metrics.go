@@ -21,9 +21,9 @@ func (server *Server) addMetrics(ctx *fiber.Ctx) (err error) {
 
 	_, ok := server.UsersMetrics[userMetricMap.UUID]
 	if ok {
-		server.UsersMetrics[userMetricMap.UUID] = append(server.UsersMetrics[userMetricMap.UUID], userMetricMap.MetricMap)
+		server.UsersMetrics[userMetricMap.UUID] = append(server.UsersMetrics[userMetricMap.UUID], userMetricMap.MetricStorage)
 	} else {
-		server.UsersMetrics[userMetricMap.UUID] = []metrics.MetricMap{userMetricMap.MetricMap}
+		server.UsersMetrics[userMetricMap.UUID] = []metrics.MetricStorage{userMetricMap.MetricStorage}
 	}
 
 	return

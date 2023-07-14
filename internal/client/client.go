@@ -10,8 +10,8 @@ import (
 )
 
 type UserMetricMap struct {
-	UUID      uuid.UUID         `json:"uuid"`
-	MetricMap metrics.MetricMap `json:"metrics"`
+	UUID          uuid.UUID             `json:"uuid"`
+	MetricStorage metrics.MetricStorage `json:"metrics"`
 }
 
 type User struct {
@@ -34,14 +34,14 @@ func NewUser(config config.Config) (user *User, err error) {
 func (user *User) SendMetricMap() (err error) {
 	agent := user.Client.Post("http://" + user.Config.ServerAddr)
 
-	mMap, err := metrics.Get()
+	mStorage, err := metrics.Get()
 	if err != nil {
 		return
 	}
 
 	request := UserMetricMap{
-		UUID:      user.UUID,
-		MetricMap: mMap,
+		UUID:          user.UUID,
+		MetricStorage: mStorage,
 	}
 	err = agent.JSON(request).Parse()
 	if err != nil {

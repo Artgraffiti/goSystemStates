@@ -13,14 +13,14 @@ import (
 type Server struct {
 	App          *fiber.App
 	Config       config.Config
-	UsersMetrics map[uuid.UUID][]metrics.MetricMap
+	UsersMetrics map[uuid.UUID][]metrics.MetricStorage
 }
 
 func NewServer(config config.Config) (server *Server) {
 	server = &Server{
 		App:          fiber.New(),
 		Config:       config,
-		UsersMetrics: make(map[uuid.UUID][]metrics.MetricMap),
+		UsersMetrics: make(map[uuid.UUID][]metrics.MetricStorage),
 	}
 	server.App.Use(logger.New(logger.Config{
 		Format: config.Logger_fmt,
