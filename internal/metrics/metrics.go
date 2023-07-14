@@ -32,7 +32,7 @@ func Get() (mMap MetricMap, err error) {
 	}
 
 	mMap = MetricMap{
-		Timestamp: time.Now().UnixNano(),
+		Timestamp: time.Now().Unix(),
 		MetricMapUint32: MetricMapUint32{
 			"NumForcedGC": memstats.NumForcedGC,
 			"NumGC":       memstats.NumGC,
