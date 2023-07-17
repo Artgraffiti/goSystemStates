@@ -18,7 +18,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	err = user.SendMetricMap()
+	err = user.StreamingMetrics()
 	if err != nil {
 		log.Fatal(err)
 	}

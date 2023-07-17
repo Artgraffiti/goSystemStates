@@ -13,17 +13,17 @@ func (server *Server) Hi(ctx *fiber.Ctx) (err error) {
 }
 
 func (server *Server) addMetrics(ctx *fiber.Ctx) (err error) {
-	var userMetricMap client.UserMetricMap
+	var userMetricStorage client.UserMetricStorage
 
-	if err := ctx.BodyParser(&userMetricMap); err != nil {
+	if err := ctx.BodyParser(&userMetricStorage); err != nil {
 		return err
 	}
 
-	_, ok := server.UsersMetrics[userMetricMap.UUID]
+	_, ok := server.UsersMetrics[userMetricStorage.UUID]
 	if ok {
-		server.UsersMetrics[userMetricMap.UUID] = append(server.UsersMetrics[userMetricMap.UUID], userMetricMap.MetricStorage)
+		server.UsersMetrics[userMetricStorage.UUID] = append(server.UsersMetrics[userMetricStorage.UUID], userMetricStorage.MetricStorage)
 	} else {
-		server.UsersMetrics[userMetricMap.UUID] = []metrics.MetricStorage{userMetricMap.MetricStorage}
+		server.UsersMetrics[userMetricStorage.UUID] = []metrics.MetricStorage{userMetricStorage.MetricStorage}
 	}
 
 	return
