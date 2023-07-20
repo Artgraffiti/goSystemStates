@@ -75,11 +75,13 @@ func (user *User) StreamingMetrics() (err error) {
 	for metricKey, metricVal := range mStorage.MetricMapFloat64 {
 		request := UserMetricStorage{
 			UUID: user.UUID,
-			MetricStorage: metrics.MetricStorage{ // В п*зду, если будут претензии. Перепиши сам.
+			MetricStorage: metrics.MetricStorage{
 				Timestamp: timestamp,
 				MetricMapFloat64: metrics.MetricMapFloat64{
 					metricKey: metricVal,
 				},
+				MetricMapUint32: metrics.MetricMapUint32{},
+				MetricMapUint64: metrics.MetricMapUint64{},
 			},
 		}
 		err := user.sendUserMetric("http://"+user.Config.ServerAddr, request)
@@ -92,11 +94,13 @@ func (user *User) StreamingMetrics() (err error) {
 	for metricKey, metricVal := range mStorage.MetricMapUint32 {
 		request := UserMetricStorage{
 			UUID: user.UUID,
-			MetricStorage: metrics.MetricStorage{ // В п*зду, если будут претензии. Перепиши сам.
-				Timestamp: timestamp,
+			MetricStorage: metrics.MetricStorage{
+				Timestamp:        timestamp,
+				MetricMapFloat64: metrics.MetricMapFloat64{},
 				MetricMapUint32: metrics.MetricMapUint32{
 					metricKey: metricVal,
 				},
+				MetricMapUint64: metrics.MetricMapUint64{},
 			},
 		}
 		err := user.sendUserMetric("http://"+user.Config.ServerAddr, request)
@@ -109,8 +113,10 @@ func (user *User) StreamingMetrics() (err error) {
 	for metricKey, metricVal := range mStorage.MetricMapUint64 {
 		request := UserMetricStorage{
 			UUID: user.UUID,
-			MetricStorage: metrics.MetricStorage{ // В п*зду, если будут претензии. Перепиши сам.
-				Timestamp: timestamp,
+			MetricStorage: metrics.MetricStorage{
+				Timestamp:        timestamp,
+				MetricMapFloat64: metrics.MetricMapFloat64{},
+				MetricMapUint32:  metrics.MetricMapUint32{},
 				MetricMapUint64: metrics.MetricMapUint64{
 					metricKey: metricVal,
 				},
