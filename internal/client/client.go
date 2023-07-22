@@ -9,7 +9,7 @@ import (
 )
 
 type User struct {
-	uuid.UUID
+	UUID   uuid.UUID
 	Client *fiber.Client
 	Config config.Config
 }
