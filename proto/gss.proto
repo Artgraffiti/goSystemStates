@@ -1,0 +1,41 @@
+syntax = "proto3";
+
+option go_package = "GSS/proto";
+package gss;
+
+
+service goSystemStates {
+    rpc uploadMetrics(UserMetricStorage) returns (Empty) {}
+    rpc getUsersMetrics(Empty) returns (UsersMetrics) {}
+    rpc metricsByUUID(MetricsByUUIDRequest) returns (MetricsByUUIDResponse) {}
+}
+
+message Empty {}
+
+message UsersMetrics {
+    map<string, MetricStorageArr> data = 1;
+}
+
+message MetricStorageArr {
+    repeated MetricStorage dataArr = 1;
+}
+
+message UserMetricStorage {
+    string UUID = 1;
+    MetricStorage MetricStorage = 2;
+}
+
+message MetricStorage {
+    int64 timestamp = 1;
+    map<string, uint32> MetricMapUint32 = 2;
+    map<string, uint64> MetricMapUint64 = 3;
+    map<string, double> MetricMapFloat64 = 4;
+}
+
+message MetricsByUUIDRequest {
+    string UUID = 1;
+}
+
+message MetricsByUUIDResponse {
+    repeated MetricStorage metricsArray = 1;
+}

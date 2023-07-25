@@ -1,8 +1,8 @@
 package server
 
 func (server Server) SetupRoutes() {
-	server.App.Get("/", server.getAllMetrics)
-	server.App.Post("/", server.addMetrics)
+	server.App.Get("/", server.GetUsersMetrics)
+	server.App.Post("/", server.UploadMetrics)
 
-	server.App.Get("/:uuid", server.metricsByUUID)
+	server.App.Get("/:uuid", server.MetricsByUUID)
 }

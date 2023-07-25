@@ -13,7 +13,9 @@ func main() {
 		log.Fatal(err)
 	}
 
-	server := server.NewServer(cfg)
+	HTTPServer := server.NewServer(cfg)
+	GRPCServer := server.NewGRPCServer(cfg)
 
-	server.Run()
+	GRPCServer.Run()
+	HTTPServer.Run()
 }

@@ -7,6 +7,8 @@ import (
 	"time"
 
 	"github.com/shirou/gopsutil/v3/mem"
+
+	pb "GSS/proto"
 )
 
 type MetricMapUint32 map[string]uint32
@@ -77,6 +79,26 @@ func Get() (mMap MetricStorage, err error) {
 		MetricMapFloat64: MetricMapFloat64{
 			"GCCPUFraction": memstats.GCCPUFraction,
 		},
+	}
+	return
+}
+
+func ConvertMetricStorageToProto(mStorage *MetricStorage) (proto *pb.MetricStorage) {
+	proto = &pb.MetricStorage{
+		Timestamp:        mStorage.Timestamp,
+		MetricMapUint32:  mStorage.MetricMapUint32,
+		MetricMapUint64:  mStorage.MetricMapUint64,
+		MetricMapFloat64: mStorage.MetricMapFloat64,
+	}
+	return
+}
+
+func ConvertProtoToMetricStorage(proto *pb.MetricStorage) (mStorage *MetricStorage) {
+	mStorage = &MetricStorage{
+		Timestamp:        proto.Timestamp,
+		MetricMapUint32:  proto.MetricMapUint32,
+		MetricMapUint64:  proto.MetricMapUint64,
+		MetricMapFloat64: proto.MetricMapFloat64,
 	}
 	return
 }
