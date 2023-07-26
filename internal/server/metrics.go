@@ -8,6 +8,8 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 
 	pb "GSS/proto"
 )
@@ -70,10 +72,15 @@ func (server *GRPCServer) UploadMetrics(ctx context.Context, protoUserMetricStor
 	response = &pb.Empty{}
 
 	userUUID, err := uuid.Parse(protoUserMetricStorage.UUID)
-	mStorage := metrics.ConvertProtoToMetricStorage(protoUserMetricStorage.MetricStorage)
 	if err != nil {
 		return
 	}
+
+	if protoUserMetricStorage.MetricStorage == nil {
+		return nil, status.Error(codes.InvalidArgument, "metric storage is not set")
+	}
+	mStorage := metrics.ConvertProtoToMetricStorage(protoUserMetricStorage.MetricStorage)
+
 	_, ok := storage[userUUID]
 	if ok {
 		timestamp := protoUserMetricStorage.MetricStorage.Timestamp
