@@ -53,12 +53,12 @@ func (server *Server) UploadMetrics(ctx *fiber.Ctx) (err error) {
 }
 
 func (server *Server) MetricsByUUID(ctx *fiber.Ctx) (err error) {
-	user_uuid, err := uuid.Parse(ctx.Params("uuid"))
+	userUUID, err := uuid.Parse(ctx.Params("uuid"))
 	if err != nil {
 		return
 	}
 
-	return ctx.JSON(storage[user_uuid])
+	return ctx.JSON(storage[userUUID])
 }
 
 func (server *Server) GetUsersMetrics(ctx *fiber.Ctx) (err error) {
@@ -107,6 +107,18 @@ func (server *GRPCServer) UploadMetrics(ctx context.Context, protoUserMetricStor
 		storage[userUUID] = []metrics.MetricStorage{*mStorage}
 	}
 	return
+}
+
+func (server *GRPCServer) MetricsByUUID(ctx context.Context, requset *pb.MetricsByUUIDRequest) (response *pb.MetricsByUUIDResponse, err error) {
+	userUUID, err := uuid.Parse(requset.UUID)
+	if err != nil {
+		return
+	}
+	response = &pb.MetricsByUUIDResponse{}
+	for _, metric := range storage[userUUID] {
+		response.MetricsArray = append(response.MetricsArray, metrics.ConvertMetricStorageToProto(&metric))
+	}
+	return response, err
 }
 
 func (server *GRPCServer) GetUsersMetrics(ctx context.Context, _ *pb.Empty) (protoUserMetrics *pb.UsersMetrics, err error) {
