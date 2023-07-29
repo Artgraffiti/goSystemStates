@@ -15,9 +15,7 @@ import (
 	pb "GSS/proto"
 )
 
-type UsersMetrics map[uuid.UUID][]metrics.MetricStorage
-
-var storage = UsersMetrics{}
+var GlobalMetricStorage = map[uuid.UUID][]metrics.MetricStorage{}
 
 type Server struct {
 	App    *fiber.App

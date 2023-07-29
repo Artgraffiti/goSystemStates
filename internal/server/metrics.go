@@ -22,31 +22,31 @@ func (server *Server) UploadMetrics(ctx *fiber.Ctx) (err error) {
 	}
 
 	userUUID := userMetricStorage.UUID
-	_, ok := storage[userUUID]
+	_, ok := GlobalMetricStorage[userUUID]
 	if ok {
 		timestamp := userMetricStorage.MetricStorage.Timestamp
-		for idx, metric := range storage[userUUID] {
+		for idx, metric := range GlobalMetricStorage[userUUID] {
 			if metric.Timestamp == timestamp {
-				if len(userMetricStorage.MetricStorage.MetricMapFloat64) == 1 {
-					for k, v := range userMetricStorage.MetricStorage.MetricMapFloat64 {
-						storage[userUUID][idx].MetricMapFloat64[k] = v
+				if len(userMetricStorage.MetricStorage.Float64Data) == 1 {
+					for k, v := range userMetricStorage.MetricStorage.Float64Data {
+						GlobalMetricStorage[userUUID][idx].Float64Data[k] = v
 					}
-				} else if len(userMetricStorage.MetricStorage.MetricMapUint32) == 1 {
-					for k, v := range userMetricStorage.MetricStorage.MetricMapUint32 {
-						storage[userUUID][idx].MetricMapUint32[k] = v
+				} else if len(userMetricStorage.MetricStorage.Uint32Data) == 1 {
+					for k, v := range userMetricStorage.MetricStorage.Uint32Data {
+						GlobalMetricStorage[userUUID][idx].Uint32Data[k] = v
 					}
-				} else if len(userMetricStorage.MetricStorage.MetricMapUint64) == 1 {
-					for k, v := range userMetricStorage.MetricStorage.MetricMapUint64 {
-						storage[userUUID][idx].MetricMapUint64[k] = v
+				} else if len(userMetricStorage.MetricStorage.Uint64Data) == 1 {
+					for k, v := range userMetricStorage.MetricStorage.Uint64Data {
+						GlobalMetricStorage[userUUID][idx].Uint64Data[k] = v
 					}
 				}
 				return
 			}
 		}
 
-		storage[userUUID] = append(storage[userUUID], userMetricStorage.MetricStorage)
+		GlobalMetricStorage[userUUID] = append(GlobalMetricStorage[userUUID], userMetricStorage.MetricStorage)
 	} else {
-		storage[userUUID] = []metrics.MetricStorage{userMetricStorage.MetricStorage}
+		GlobalMetricStorage[userUUID] = []metrics.MetricStorage{userMetricStorage.MetricStorage}
 	}
 
 	return
@@ -58,11 +58,11 @@ func (server *Server) MetricsByUUID(ctx *fiber.Ctx) (err error) {
 		return
 	}
 
-	return ctx.JSON(storage[userUUID])
+	return ctx.JSON(GlobalMetricStorage[userUUID])
 }
 
 func (server *Server) GetUsersMetrics(ctx *fiber.Ctx) (err error) {
-	return ctx.JSON(storage)
+	return ctx.JSON(GlobalMetricStorage)
 }
 
 /* ------------------------GRPS SERVER------------------------ */
@@ -76,35 +76,35 @@ func (server *GRPCServer) UploadMetrics(ctx context.Context, protoUserMetricStor
 		return
 	}
 
-	if protoUserMetricStorage.MetricStorage == nil {
+	if protoUserMetricStorage.Metric == nil {
 		return nil, status.Error(codes.InvalidArgument, "metric storage is not set")
 	}
-	mStorage := metrics.ConvertProtoToMetricStorage(protoUserMetricStorage.MetricStorage)
+	mStorage := metrics.ConvertProtoToMetricStorage(protoUserMetricStorage.Metric)
 
-	_, ok := storage[userUUID]
+	_, ok := GlobalMetricStorage[userUUID]
 	if ok {
-		timestamp := protoUserMetricStorage.MetricStorage.Timestamp
-		for idx, metric := range storage[userUUID] {
+		timestamp := protoUserMetricStorage.Metric.Timestamp
+		for idx, metric := range GlobalMetricStorage[userUUID] {
 			if metric.Timestamp == timestamp {
-				if len(protoUserMetricStorage.MetricStorage.MetricMapFloat64) == 1 {
-					for k, v := range protoUserMetricStorage.MetricStorage.MetricMapFloat64 {
-						storage[userUUID][idx].MetricMapFloat64[k] = v
+				if len(protoUserMetricStorage.Metric.Float64Data) == 1 {
+					for k, v := range protoUserMetricStorage.Metric.Float64Data {
+						GlobalMetricStorage[userUUID][idx].Float64Data[k] = v
 					}
-				} else if len(protoUserMetricStorage.MetricStorage.MetricMapUint32) == 1 {
-					for k, v := range protoUserMetricStorage.MetricStorage.MetricMapUint32 {
-						storage[userUUID][idx].MetricMapUint32[k] = v
+				} else if len(protoUserMetricStorage.Metric.Uint32Data) == 1 {
+					for k, v := range protoUserMetricStorage.Metric.Uint32Data {
+						GlobalMetricStorage[userUUID][idx].Uint32Data[k] = v
 					}
-				} else if len(protoUserMetricStorage.MetricStorage.MetricMapUint64) == 1 {
-					for k, v := range protoUserMetricStorage.MetricStorage.MetricMapUint64 {
-						storage[userUUID][idx].MetricMapUint64[k] = v
+				} else if len(protoUserMetricStorage.Metric.Uint64Data) == 1 {
+					for k, v := range protoUserMetricStorage.Metric.Uint64Data {
+						GlobalMetricStorage[userUUID][idx].Uint64Data[k] = v
 					}
 				}
 				return
 			}
 		}
-		storage[userUUID] = append(storage[userUUID], *mStorage)
+		GlobalMetricStorage[userUUID] = append(GlobalMetricStorage[userUUID], *mStorage)
 	} else {
-		storage[userUUID] = []metrics.MetricStorage{*mStorage}
+		GlobalMetricStorage[userUUID] = []metrics.MetricStorage{*mStorage}
 	}
 	return
 }
@@ -116,8 +116,8 @@ func (server *GRPCServer) MetricsByUUID(ctx context.Context, requset *pb.Metrics
 		return
 	}
 	response = &pb.MetricsByUUIDResponse{}
-	for _, metric := range storage[userUUID] {
-		response.MetricsArray = append(response.MetricsArray, metrics.ConvertMetricStorageToProto(&metric))
+	for _, metric := range GlobalMetricStorage[userUUID] {
+		response.DataArr = append(response.DataArr, metrics.ConvertMetricStorageToProto(&metric))
 	}
 	return response, err
 }
@@ -127,7 +127,7 @@ func (server *GRPCServer) GetUsersMetrics(ctx context.Context, _ *pb.Empty) (pro
 	protoUserMetrics = &pb.UsersMetrics{
 		Data: map[string]*pb.MetricStorageArr{},
 	}
-	for userUUID, metricStorageArr := range storage {
+	for userUUID, metricStorageArr := range GlobalMetricStorage {
 		userUUIDStr := userUUID.String()
 		protoUserMetrics.Data[userUUIDStr] = &pb.MetricStorageArr{
 			DataArr: []*pb.MetricStorage{},

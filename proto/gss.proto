@@ -13,23 +13,23 @@ service goSystemStates {
 message Empty {}
 
 message UsersMetrics {
-    map<string, MetricStorageArr> data = 1;
+    map<string, MetricStorageArr> Data = 1;
 }
 
 message MetricStorageArr {
-    repeated MetricStorage dataArr = 1;
+    repeated MetricStorage DataArr = 1;
 }
 
 message UserMetricStorage {
     string UUID = 1;
-    MetricStorage MetricStorage = 2;
+    MetricStorage Metric = 2;
 }
 
 message MetricStorage {
-    int64 timestamp = 1;
-    map<string, uint32> MetricMapUint32 = 2;
-    map<string, uint64> MetricMapUint64 = 3;
-    map<string, double> MetricMapFloat64 = 4;
+    int64 Timestamp = 1;
+    map<string, uint32> Uint32Data = 2;
+    map<string, uint64> Uint64Data = 3;
+    map<string, double> Float64Data = 4;
 }
 
 message MetricsByUUIDRequest {
@@ -37,5 +37,5 @@ message MetricsByUUIDRequest {
 }
 
 message MetricsByUUIDResponse {
-    repeated MetricStorage metricsArray = 1;
+    repeated MetricStorage DataArr = 1;
 }

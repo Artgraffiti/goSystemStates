@@ -11,20 +11,14 @@ import (
 	pb "GSS/proto"
 )
 
-type MetricMapUint32 map[string]uint32
-
-type MetricMapUint64 map[string]uint64
-
-type MetricMapFloat64 map[string]float64
-
 type MetricStorage struct {
-	Timestamp        int64            `json:"timestamp"`
-	MetricMapUint32  MetricMapUint32  `json:"uint32"`
-	MetricMapUint64  MetricMapUint64  `json:"uint64"`
-	MetricMapFloat64 MetricMapFloat64 `json:"float64"`
+	Timestamp   int64              `json:"timestamp"`
+	Uint32Data  map[string]uint32  `json:"uint32"`
+	Uint64Data  map[string]uint64  `json:"uint64"`
+	Float64Data map[string]float64 `json:"float64"`
 }
 
-func Get() (mMap MetricStorage, err error) {
+func Get() (metric MetricStorage, err error) {
 	rand.Seed(time.Now().UnixNano())
 	memstatsFunc := expvar.Get("memstats").(expvar.Func)
 	memstats := memstatsFunc().(runtime.MemStats)
@@ -33,13 +27,13 @@ func Get() (mMap MetricStorage, err error) {
 		return
 	}
 
-	mMap = MetricStorage{
+	metric = MetricStorage{
 		Timestamp: time.Now().Unix(),
-		MetricMapUint32: MetricMapUint32{
+		Uint32Data: map[string]uint32{
 			"NumForcedGC": memstats.NumForcedGC,
 			"NumGC":       memstats.NumGC,
 		},
-		MetricMapUint64: MetricMapUint64{
+		Uint64Data: map[string]uint64{
 			"BuckHashSys": memstats.BuckHashSys,
 			"Frees":       memstats.Frees,
 			"GCSys":       memstats.GCSys,
@@ -76,7 +70,7 @@ func Get() (mMap MetricStorage, err error) {
 			"TotalMemory": v.Total,
 			"FreeMemory":  v.Free,
 		},
-		MetricMapFloat64: MetricMapFloat64{
+		Float64Data: map[string]float64{
 			"GCCPUFraction": memstats.GCCPUFraction,
 		},
 	}
@@ -85,20 +79,20 @@ func Get() (mMap MetricStorage, err error) {
 
 func ConvertMetricStorageToProto(mStorage *MetricStorage) (proto *pb.MetricStorage) {
 	proto = &pb.MetricStorage{
-		Timestamp:        mStorage.Timestamp,
-		MetricMapUint32:  mStorage.MetricMapUint32,
-		MetricMapUint64:  mStorage.MetricMapUint64,
-		MetricMapFloat64: mStorage.MetricMapFloat64,
+		Timestamp:   mStorage.Timestamp,
+		Uint32Data:  mStorage.Uint32Data,
+		Uint64Data:  mStorage.Uint64Data,
+		Float64Data: mStorage.Float64Data,
 	}
 	return
 }
 
 func ConvertProtoToMetricStorage(proto *pb.MetricStorage) (mStorage *MetricStorage) {
 	mStorage = &MetricStorage{
-		Timestamp:        proto.Timestamp,
-		MetricMapUint32:  proto.MetricMapUint32,
-		MetricMapUint64:  proto.MetricMapUint64,
-		MetricMapFloat64: proto.MetricMapFloat64,
+		Timestamp:   proto.Timestamp,
+		Uint32Data:  proto.Uint32Data,
+		Uint64Data:  proto.Uint64Data,
+		Float64Data: proto.Float64Data,
 	}
 	return
 }

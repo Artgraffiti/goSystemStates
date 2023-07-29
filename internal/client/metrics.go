@@ -53,16 +53,16 @@ func (user *User) StreamingMetrics() (err error) {
 	}
 
 	timestamp := mStorage.Timestamp
-	for metricKey, metricVal := range mStorage.MetricMapFloat64 {
+	for metricKey, metricVal := range mStorage.Float64Data {
 		request := UserMetricStorage{
 			UUID: user.UUID,
 			MetricStorage: metrics.MetricStorage{
 				Timestamp: timestamp,
-				MetricMapFloat64: metrics.MetricMapFloat64{
+				Float64Data: map[string]float64{
 					metricKey: metricVal,
 				},
-				MetricMapUint32: metrics.MetricMapUint32{},
-				MetricMapUint64: metrics.MetricMapUint64{},
+				Uint32Data: map[string]uint32{},
+				Uint64Data: map[string]uint64{},
 			},
 		}
 		err := user.sendUserMetric("http://"+user.Config.ServerAddr, request)
@@ -72,16 +72,16 @@ func (user *User) StreamingMetrics() (err error) {
 		log.Printf("Sending metric '%s'...", metricKey)
 	}
 
-	for metricKey, metricVal := range mStorage.MetricMapUint32 {
+	for metricKey, metricVal := range mStorage.Uint32Data {
 		request := UserMetricStorage{
 			UUID: user.UUID,
 			MetricStorage: metrics.MetricStorage{
-				Timestamp:        timestamp,
-				MetricMapFloat64: metrics.MetricMapFloat64{},
-				MetricMapUint32: metrics.MetricMapUint32{
+				Timestamp:   timestamp,
+				Float64Data: map[string]float64{},
+				Uint32Data: map[string]uint32{
 					metricKey: metricVal,
 				},
-				MetricMapUint64: metrics.MetricMapUint64{},
+				Uint64Data: map[string]uint64{},
 			},
 		}
 		err := user.sendUserMetric("http://"+user.Config.ServerAddr, request)
@@ -91,14 +91,14 @@ func (user *User) StreamingMetrics() (err error) {
 		log.Printf("Sending metric '%s'...", metricKey)
 	}
 
-	for metricKey, metricVal := range mStorage.MetricMapUint64 {
+	for metricKey, metricVal := range mStorage.Uint64Data {
 		request := UserMetricStorage{
 			UUID: user.UUID,
 			MetricStorage: metrics.MetricStorage{
-				Timestamp:        timestamp,
-				MetricMapFloat64: metrics.MetricMapFloat64{},
-				MetricMapUint32:  metrics.MetricMapUint32{},
-				MetricMapUint64: metrics.MetricMapUint64{
+				Timestamp:   timestamp,
+				Float64Data: map[string]float64{},
+				Uint32Data:  map[string]uint32{},
+				Uint64Data: map[string]uint64{
 					metricKey: metricVal,
 				},
 			},
