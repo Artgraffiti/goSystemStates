@@ -110,6 +110,7 @@ func (server *GRPCServer) UploadMetrics(ctx context.Context, protoUserMetricStor
 }
 
 func (server *GRPCServer) MetricsByUUID(ctx context.Context, requset *pb.MetricsByUUIDRequest) (response *pb.MetricsByUUIDResponse, err error) {
+	log.Println("GRPC method MetricsByUUID...")
 	userUUID, err := uuid.Parse(requset.UUID)
 	if err != nil {
 		return

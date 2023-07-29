@@ -50,7 +50,6 @@ func (server *Server) Run() {
 type GRPCServer struct {
 	inner_server *grpc.Server
 	Config       config.Config
-	UsersMetrics UsersMetrics
 	pb.UnimplementedGoSystemStatesServer
 }
 
@@ -59,8 +58,7 @@ func NewGRPCServer(config config.Config) (serverGRPC *GRPCServer) {
 		inner_server: grpc.NewServer(
 			grpc.Creds(insecure.NewCredentials()),
 		),
-		Config:       config,
-		UsersMetrics: UsersMetrics{},
+		Config: config,
 	}
 	return
 }
