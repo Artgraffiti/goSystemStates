@@ -1,49 +1,15 @@
-package server
+package grpc
 
 import (
-	"GSS/internal/metrics"
 	"GSS/internal/server/config"
 	"log"
 	"net"
 
-	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/logger"
-	"github.com/google/uuid"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 
 	pb "GSS/proto"
 )
-
-var GlobalMetricStorage = map[uuid.UUID][]metrics.MetricStorage{}
-
-type Server struct {
-	App    *fiber.App
-	Config config.Config
-}
-
-func NewServer(config config.Config) (server *Server) {
-	server = &Server{
-		App:    fiber.New(),
-		Config: config,
-	}
-	server.App.Use(logger.New(logger.Config{
-		Format: config.Logger_fmt,
-	}))
-
-	server.SetupRoutes()
-
-	return
-}
-
-func (server *Server) Run() {
-	err := server.App.Listen(server.Config.ServerAddr)
-	if err != nil {
-		log.Fatal(err)
-	}
-}
-
-/* ------------------------GRPS SERVER------------------------ */
 
 type GRPCServer struct {
 	inner_server *grpc.Server

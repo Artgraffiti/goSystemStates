@@ -1,4 +1,4 @@
-package server
+package http
 
 func (server Server) SetupRoutes() {
 	server.App.Get("/", server.GetUsersMetrics)

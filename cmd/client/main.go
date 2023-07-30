@@ -3,8 +3,8 @@ package main
 import (
 	"log"
 
-	"GSS/internal/client"
 	"GSS/internal/client/config"
+	"GSS/internal/client/http"
 )
 
 func main() {
@@ -13,7 +13,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	user, err := client.NewUser(cfg)
+	user, err := http.NewUser(cfg)
 	if err != nil {
 		log.Fatal(err)
 	}

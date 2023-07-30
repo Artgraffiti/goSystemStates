@@ -3,8 +3,9 @@ package main
 import (
 	"log"
 
-	"GSS/internal/server"
 	"GSS/internal/server/config"
+	"GSS/internal/server/grpc"
+	"GSS/internal/server/http"
 )
 
 func main() {
@@ -13,8 +14,8 @@ func main() {
 		log.Fatal(err)
 	}
 
-	HTTPServer := server.NewServer(cfg)
-	GRPCServer := server.NewGRPCServer(cfg)
+	HTTPServer := http.NewServer(cfg)
+	GRPCServer := grpc.NewGRPCServer(cfg)
 
 	GRPCServer.Run()
 	HTTPServer.Run()
