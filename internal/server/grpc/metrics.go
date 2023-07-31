@@ -13,35 +13,29 @@ import (
 	pb "GSS/proto"
 )
 
-func (server *GRPCServer) UploadMetrics(ctx context.Context, protoUserMetricStorage *pb.UserMetricStorage) (response *pb.Empty, err error) {
-	log.Println("GRPC method UploadMetrics...")
-	response = &pb.Empty{}
-
-	userUUID, err := uuid.Parse(protoUserMetricStorage.UUID)
+func unloadProtoMetricDataToGlobalMetricStorage(data *pb.UserMetricStorage) (err error) {
+	userUUID, err := uuid.Parse(data.UUID)
 	if err != nil {
 		return
 	}
 
-	if protoUserMetricStorage.Metric == nil {
-		return nil, status.Error(codes.InvalidArgument, "metric storage is not set")
-	}
-	mStorage := metrics.ConvertProtoToMetricStorage(protoUserMetricStorage.Metric)
+	mStorage := metrics.ConvertProtoToMetricStorage(data.Metric)
 
 	_, ok := storage.GlobalMetricStorage[userUUID]
 	if ok {
-		timestamp := protoUserMetricStorage.Metric.Timestamp
+		timestamp := data.Metric.Timestamp
 		for idx, metric := range storage.GlobalMetricStorage[userUUID] {
 			if metric.Timestamp == timestamp {
-				if len(protoUserMetricStorage.Metric.Float64Data) == 1 {
-					for k, v := range protoUserMetricStorage.Metric.Float64Data {
+				if len(data.Metric.Float64Data) == 1 {
+					for k, v := range data.Metric.Float64Data {
 						storage.GlobalMetricStorage[userUUID][idx].Float64Data[k] = v
 					}
-				} else if len(protoUserMetricStorage.Metric.Uint32Data) == 1 {
-					for k, v := range protoUserMetricStorage.Metric.Uint32Data {
+				} else if len(data.Metric.Uint32Data) == 1 {
+					for k, v := range data.Metric.Uint32Data {
 						storage.GlobalMetricStorage[userUUID][idx].Uint32Data[k] = v
 					}
-				} else if len(protoUserMetricStorage.Metric.Uint64Data) == 1 {
-					for k, v := range protoUserMetricStorage.Metric.Uint64Data {
+				} else if len(data.Metric.Uint64Data) == 1 {
+					for k, v := range data.Metric.Uint64Data {
 						storage.GlobalMetricStorage[userUUID][idx].Uint64Data[k] = v
 					}
 				}
@@ -52,6 +46,17 @@ func (server *GRPCServer) UploadMetrics(ctx context.Context, protoUserMetricStor
 	} else {
 		storage.GlobalMetricStorage[userUUID] = []metrics.MetricStorage{*mStorage}
 	}
+	return
+}
+
+func (server *GRPCServer) UploadMetrics(ctx context.Context, protoUserMetricStorage *pb.UserMetricStorage) (response *pb.Empty, err error) {
+	log.Println("GRPC method UploadMetrics...")
+	response = &pb.Empty{}
+
+	if protoUserMetricStorage.Metric == nil {
+		return nil, status.Error(codes.InvalidArgument, "metric storage is not set")
+	}
+	unloadProtoMetricDataToGlobalMetricStorage(protoUserMetricStorage)
 	return
 }
 

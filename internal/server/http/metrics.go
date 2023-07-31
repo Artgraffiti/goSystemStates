@@ -9,29 +9,23 @@ import (
 	"github.com/google/uuid"
 )
 
-func (server *Server) UploadMetrics(ctx *fiber.Ctx) (err error) {
-	var userMetricStorage clientHTTP.UserMetricStorage
-
-	if err := ctx.BodyParser(&userMetricStorage); err != nil {
-		return err
-	}
-
-	userUUID := userMetricStorage.UUID
-	_, ok := storage.GlobalMetricStorage[userUUID]
+func unloadUserMetricStorageToGlobalMetricStorage(data clientHTTP.UserMetricStorage) (err error) {
+	userUUID := data.UUID
+	userMetricStorage, ok := storage.GlobalMetricStorage[userUUID]
 	if ok {
-		timestamp := userMetricStorage.MetricStorage.Timestamp
-		for idx, metric := range storage.GlobalMetricStorage[userUUID] {
+		timestamp := data.MetricStorage.Timestamp
+		for idx, metric := range userMetricStorage {
 			if metric.Timestamp == timestamp {
-				if len(userMetricStorage.MetricStorage.Float64Data) == 1 {
-					for k, v := range userMetricStorage.MetricStorage.Float64Data {
+				if len(data.MetricStorage.Float64Data) == 1 {
+					for k, v := range data.MetricStorage.Float64Data {
 						storage.GlobalMetricStorage[userUUID][idx].Float64Data[k] = v
 					}
-				} else if len(userMetricStorage.MetricStorage.Uint32Data) == 1 {
-					for k, v := range userMetricStorage.MetricStorage.Uint32Data {
+				} else if len(data.MetricStorage.Uint32Data) == 1 {
+					for k, v := range data.MetricStorage.Uint32Data {
 						storage.GlobalMetricStorage[userUUID][idx].Uint32Data[k] = v
 					}
-				} else if len(userMetricStorage.MetricStorage.Uint64Data) == 1 {
-					for k, v := range userMetricStorage.MetricStorage.Uint64Data {
+				} else if len(data.MetricStorage.Uint64Data) == 1 {
+					for k, v := range data.MetricStorage.Uint64Data {
 						storage.GlobalMetricStorage[userUUID][idx].Uint64Data[k] = v
 					}
 				}
@@ -39,11 +33,21 @@ func (server *Server) UploadMetrics(ctx *fiber.Ctx) (err error) {
 			}
 		}
 
-		storage.GlobalMetricStorage[userUUID] = append(storage.GlobalMetricStorage[userUUID], userMetricStorage.MetricStorage)
+		storage.GlobalMetricStorage[userUUID] = append(storage.GlobalMetricStorage[userUUID], data.MetricStorage)
 	} else {
-		storage.GlobalMetricStorage[userUUID] = []metrics.MetricStorage{userMetricStorage.MetricStorage}
+		storage.GlobalMetricStorage[userUUID] = []metrics.MetricStorage{data.MetricStorage}
+	}
+	return
+}
+
+func (server *Server) UploadMetrics(ctx *fiber.Ctx) (err error) {
+	var request clientHTTP.UserMetricStorage
+
+	if err := ctx.BodyParser(&request); err != nil {
+		return err
 	}
 
+	unloadUserMetricStorageToGlobalMetricStorage(request)
 	return
 }
 
