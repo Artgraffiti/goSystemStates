@@ -4,7 +4,7 @@ import (
 	"log"
 
 	"GSS/internal/client/config"
-	"GSS/internal/client/http"
+	clientGRPC "GSS/internal/client/grpc"
 )
 
 func main() {
@@ -13,13 +13,11 @@ func main() {
 		log.Fatal(err)
 	}
 
-	user, err := http.NewUser(cfg)
+	GRPCUser, err := clientGRPC.NewGRPCUser(cfg)
 	if err != nil {
 		log.Fatal(err)
 	}
+	defer GRPCUser.Close()
 
-	err = user.StreamingMetrics()
-	if err != nil {
-		log.Fatal(err)
-	}
+	GRPCUser.UploadMetrics()
 }

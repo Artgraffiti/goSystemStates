@@ -3,16 +3,9 @@ package http
 import (
 	"GSS/internal/metrics"
 	"log"
-
-	"github.com/google/uuid"
 )
 
-type UserMetricStorage struct {
-	UUID          uuid.UUID             `json:"uuid"`
-	MetricStorage metrics.MetricStorage `json:"metrics"`
-}
-
-func (user *User) sendUserMetric(url string, request UserMetricStorage) (err error) {
+func (user *User) sendUserMetric(url string, request metrics.UserMetricStorage) (err error) {
 	agent := user.Client.Post(url)
 	err = agent.JSON(request).Parse()
 	if err != nil {
@@ -29,7 +22,7 @@ func (user *User) sendUserMetric(url string, request UserMetricStorage) (err err
 
 func (user *User) streamingMetricsByFloat64(timestamp int64, mStorage metrics.MetricStorage) (err error) {
 	for k, v := range mStorage.Float64Data {
-		request := UserMetricStorage{
+		request := metrics.UserMetricStorage{
 			UUID: user.UUID,
 			MetricStorage: metrics.MetricStorage{
 				Timestamp: timestamp,
@@ -52,7 +45,7 @@ func (user *User) streamingMetricsByFloat64(timestamp int64, mStorage metrics.Me
 
 func (user *User) streamingMetricsByUint32(timestamp int64, mStorage metrics.MetricStorage) (err error) {
 	for metricKey, metricVal := range mStorage.Uint32Data {
-		request := UserMetricStorage{
+		request := metrics.UserMetricStorage{
 			UUID: user.UUID,
 			MetricStorage: metrics.MetricStorage{
 				Timestamp:   timestamp,
@@ -75,7 +68,7 @@ func (user *User) streamingMetricsByUint32(timestamp int64, mStorage metrics.Met
 
 func (user *User) streamingMetricsByUint64(timestamp int64, mStorage metrics.MetricStorage) (err error) {
 	for metricKey, metricVal := range mStorage.Uint64Data {
-		request := UserMetricStorage{
+		request := metrics.UserMetricStorage{
 			UUID: user.UUID,
 			MetricStorage: metrics.MetricStorage{
 				Timestamp:   timestamp,
@@ -102,7 +95,7 @@ func (user *User) SendMetricStorage() (err error) {
 		return
 	}
 
-	request := UserMetricStorage{
+	request := metrics.UserMetricStorage{
 		UUID:          user.UUID,
 		MetricStorage: mStorage,
 	}

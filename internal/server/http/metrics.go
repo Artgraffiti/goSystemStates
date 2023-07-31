@@ -1,7 +1,6 @@
 package http
 
 import (
-	clientHTTP "GSS/internal/client/http"
 	"GSS/internal/metrics"
 	"GSS/internal/server/storage"
 
@@ -9,7 +8,7 @@ import (
 	"github.com/google/uuid"
 )
 
-func unloadUserMetricStorageToGlobalMetricStorage(data clientHTTP.UserMetricStorage) (err error) {
+func unloadUserMetricStorageToGlobalMetricStorage(data metrics.UserMetricStorage) (err error) {
 	userUUID := data.UUID
 	userMetricStorage, ok := storage.GlobalMetricStorage[userUUID]
 	if ok {
@@ -41,7 +40,7 @@ func unloadUserMetricStorageToGlobalMetricStorage(data clientHTTP.UserMetricStor
 }
 
 func (server *Server) UploadMetrics(ctx *fiber.Ctx) (err error) {
-	var request clientHTTP.UserMetricStorage
+	var request metrics.UserMetricStorage
 
 	if err := ctx.BodyParser(&request); err != nil {
 		return err

@@ -6,6 +6,7 @@ import (
 	"runtime"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/shirou/gopsutil/v3/mem"
 
 	pb "GSS/proto"
@@ -16,6 +17,11 @@ type MetricStorage struct {
 	Uint32Data  map[string]uint32  `json:"uint32"`
 	Uint64Data  map[string]uint64  `json:"uint64"`
 	Float64Data map[string]float64 `json:"float64"`
+}
+
+type UserMetricStorage struct {
+	UUID          uuid.UUID     `json:"uuid"`
+	MetricStorage MetricStorage `json:"metrics"`
 }
 
 func Get() (metric MetricStorage, err error) {
@@ -93,6 +99,14 @@ func ConvertProtoToMetricStorage(proto *pb.MetricStorage) (mStorage *MetricStora
 		Uint32Data:  proto.Uint32Data,
 		Uint64Data:  proto.Uint64Data,
 		Float64Data: proto.Float64Data,
+	}
+	return
+}
+
+func ConvertUserMetricStorageToProto(umStorage *UserMetricStorage) (proto *pb.UserMetricStorage) {
+	proto = &pb.UserMetricStorage{
+		UUID:   umStorage.UUID.String(),
+		Metric: ConvertMetricStorageToProto(&umStorage.MetricStorage),
 	}
 	return
 }

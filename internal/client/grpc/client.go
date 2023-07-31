@@ -13,8 +13,9 @@ import (
 
 type GRPCUser struct {
 	UUID   uuid.UUID
-	Client pb.GoSystemStatesClient
 	Config config.Config
+	conn   *grpc.ClientConn
+	client pb.GoSystemStatesClient
 }
 
 func NewGRPCUser(config config.Config) (user *GRPCUser, err error) {
@@ -22,16 +23,24 @@ func NewGRPCUser(config config.Config) (user *GRPCUser, err error) {
 	if err != nil {
 		log.Fatal(err)
 	}
+
 	log.Printf("Init GRPCUser(uuid): %s", userUUID)
+
 	conn, err := grpc.Dial("localhost:50051", grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		log.Fatalf("fail to dial: %v", err)
 	}
-	defer conn.Close()
+
+	client := pb.NewGoSystemStatesClient(conn)
 	user = &GRPCUser{
 		UUID:   userUUID,
-		Client: pb.NewGoSystemStatesClient(conn),
 		Config: config,
+		conn:   conn,
+		client: client,
 	}
 	return
+}
+
+func (user *GRPCUser) Close() {
+	user.conn.Close()
 }
