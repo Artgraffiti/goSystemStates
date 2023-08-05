@@ -10,6 +10,9 @@ type Config struct {
 	// GRPCServerAddr - адрес GRPC сервера (по умолчанию: 127.0.0.1:50051)
 	GRPCServerAddr string `mapstructure:"GRPC_SERVER_ADDR"`
 
+	// MQTTServerAddr - адрес GRPC сервера (по умолчанию: 127.0.0.1:1883)
+	MQTTServerAddr string `mapstructure:"MQTT_SERVER_ADDR"`
+
 	// UUID - универсальный уникальный индификатор пользователя
 	UUID string `mapstructure:"UUID"`
 }
@@ -18,6 +21,7 @@ func LoadConfig(path string) (config Config, err error) {
 	// Config default values
 	viper.SetDefault("SERVER_ADDR", "127.0.0.1:8080")
 	viper.SetDefault("GRPC_SERVER_ADDR", "127.0.0.1:50051")
+	viper.SetDefault("MQTT_SERVER_ADDR", "127.0.0.1:1883")
 	viper.SetDefault("UUID", "1412fe28-06b0-408b-832d-f2d5aa4792a5")
 
 	viper.AddConfigPath(path)

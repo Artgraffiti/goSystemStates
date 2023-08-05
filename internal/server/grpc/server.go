@@ -2,8 +2,10 @@ package grpc
 
 import (
 	"GSS/internal/server/config"
+	"context"
 	"log"
 	"net"
+	"sync"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -27,7 +29,10 @@ func NewGRPCServer(config config.Config) (serverGRPC *GRPCServer) {
 	return
 }
 
-func (server *GRPCServer) Run() (err error) {
+func (server *GRPCServer) Run(ctx context.Context, wg *sync.WaitGroup) (err error) {
+	log.Println("GRPC server started")
+	wg.Add(1)
+
 	lis, err := net.Listen("tcp", server.Config.GRPCServerAddr)
 	if err != nil {
 		return
@@ -40,6 +45,13 @@ func (server *GRPCServer) Run() (err error) {
 		if err != nil {
 			log.Println(err)
 		}
+	}()
+
+	go func() {
+		<-ctx.Done()
+		log.Println("GRPC server stoped")
+		server.inner_server.GracefulStop()
+		wg.Done()
 	}()
 	return
 }
