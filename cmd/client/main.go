@@ -38,6 +38,7 @@ func main() {
 	time.Sleep(time.Second * 2)
 
 	/* MQTT Client */
+
 	MQTTUser, err := clientMQTT.NewMQTTUser(cfg)
 	if err != nil {
 		log.Fatal(err)

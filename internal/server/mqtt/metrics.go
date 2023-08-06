@@ -2,7 +2,6 @@ package mqtt
 
 import (
 	"log"
-	"strings"
 
 	"GSS/internal/metrics"
 	"GSS/internal/server/storage"
@@ -12,14 +11,6 @@ import (
 	"github.com/google/uuid"
 	"google.golang.org/protobuf/proto"
 )
-
-func getLastTopicPart(topic string) string {
-	parts := strings.Split(topic, "/")
-	if len(parts) > 0 {
-		return parts[len(parts)-1]
-	}
-	return ""
-}
 
 func unloadProtoMetricDataToGlobalMetricStorage(data *pb.UserMetricStorage) (err error) {
 	userUUID, err := uuid.Parse(data.UUID)
