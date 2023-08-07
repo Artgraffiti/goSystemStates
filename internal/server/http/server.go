@@ -10,13 +10,13 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/logger"
 )
 
-type Server struct {
+type HTTPServer struct {
 	App    *fiber.App
 	Config config.Config
 }
 
-func NewServer(config config.Config) (server *Server) {
-	server = &Server{
+func NewHTTPServer(config config.Config) (server *HTTPServer) {
+	server = &HTTPServer{
 		App:    fiber.New(),
 		Config: config,
 	}
@@ -29,11 +29,14 @@ func NewServer(config config.Config) (server *Server) {
 	return
 }
 
-func (server *Server) Run(ctx context.Context, wg *sync.WaitGroup) {
+func (server *HTTPServer) Run(ctx context.Context, wg *sync.WaitGroup) {
 	wg.Add(1)
 	go func() {
 		<-ctx.Done()
+
 		server.App.Shutdown()
+		log.Println("HTTP server stoped")
+
 		wg.Done()
 	}()
 

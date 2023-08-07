@@ -35,7 +35,7 @@ func (server *MQTTServer) Run(ctx context.Context, wg *sync.WaitGroup) {
 		<-ctx.Done()
 
 		server.client.Disconnect(250)
-		log.Println("Disconnected from MQTT broker")
+		log.Println("MQTT server stoped")
 
 		wg.Done()
 	}()

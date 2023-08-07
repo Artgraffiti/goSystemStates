@@ -5,7 +5,7 @@ import (
 	"log"
 )
 
-func (user *User) sendUserMetric(url string, request metrics.UserMetricStorage) (err error) {
+func (user *HTTPUser) sendUserMetric(url string, request metrics.UserMetricStorage) (err error) {
 	agent := user.Client.Post(url)
 	err = agent.JSON(request).Parse()
 	if err != nil {
@@ -20,7 +20,7 @@ func (user *User) sendUserMetric(url string, request metrics.UserMetricStorage) 
 	return
 }
 
-func (user *User) streamingMetricsByFloat64(timestamp int64, mStorage metrics.MetricStorage) (err error) {
+func (user *HTTPUser) streamingMetricsByFloat64(timestamp int64, mStorage metrics.MetricStorage) (err error) {
 	for k, v := range mStorage.Float64Data {
 		request := metrics.UserMetricStorage{
 			UUID: user.UUID,
@@ -43,7 +43,7 @@ func (user *User) streamingMetricsByFloat64(timestamp int64, mStorage metrics.Me
 	return
 }
 
-func (user *User) streamingMetricsByUint32(timestamp int64, mStorage metrics.MetricStorage) (err error) {
+func (user *HTTPUser) streamingMetricsByUint32(timestamp int64, mStorage metrics.MetricStorage) (err error) {
 	for metricKey, metricVal := range mStorage.Uint32Data {
 		request := metrics.UserMetricStorage{
 			UUID: user.UUID,
@@ -66,7 +66,7 @@ func (user *User) streamingMetricsByUint32(timestamp int64, mStorage metrics.Met
 	return
 }
 
-func (user *User) streamingMetricsByUint64(timestamp int64, mStorage metrics.MetricStorage) (err error) {
+func (user *HTTPUser) streamingMetricsByUint64(timestamp int64, mStorage metrics.MetricStorage) (err error) {
 	for metricKey, metricVal := range mStorage.Uint64Data {
 		request := metrics.UserMetricStorage{
 			UUID: user.UUID,
@@ -89,7 +89,7 @@ func (user *User) streamingMetricsByUint64(timestamp int64, mStorage metrics.Met
 	return
 }
 
-func (user *User) SendMetricStorage() (err error) {
+func (user *HTTPUser) SendMetricStorage() (err error) {
 	mStorage, err := metrics.Get()
 	if err != nil {
 		return
@@ -108,7 +108,7 @@ func (user *User) SendMetricStorage() (err error) {
 	return
 }
 
-func (user *User) StreamingMetrics() (err error) {
+func (user *HTTPUser) StreamingMetrics() (err error) {
 	mStorage, err := metrics.Get()
 	if err != nil {
 		return

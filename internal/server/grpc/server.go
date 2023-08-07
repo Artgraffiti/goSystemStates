@@ -49,8 +49,10 @@ func (server *GRPCServer) Run(ctx context.Context, wg *sync.WaitGroup) (err erro
 
 	go func() {
 		<-ctx.Done()
-		log.Println("GRPC server stoped")
+
 		server.inner_server.GracefulStop()
+		log.Println("GRPC server stoped")
+
 		wg.Done()
 	}()
 	return

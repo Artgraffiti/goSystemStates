@@ -1,6 +1,6 @@
 package http
 
-func (server Server) SetupRoutes() {
+func (server HTTPServer) SetupRoutes() {
 	server.App.Get("/", server.GetUsersMetrics)
 	server.App.Post("/", server.UploadMetrics)
 

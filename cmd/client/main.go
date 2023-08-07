@@ -5,9 +5,9 @@ import (
 	"time"
 
 	"GSS/internal/client/config"
-	clientGRPC "GSS/internal/client/grpc"
-	clientHTTP "GSS/internal/client/http"
-	clientMQTT "GSS/internal/client/mqtt"
+	"GSS/internal/client/grpc"
+	"GSS/internal/client/http"
+	"GSS/internal/client/mqtt"
 )
 
 func main() {
@@ -18,7 +18,7 @@ func main() {
 
 	/* HTTP Client */
 
-	HTTPUser, err := clientHTTP.NewUser(cfg)
+	HTTPUser, err := http.NewHTTPUser(cfg)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -28,7 +28,7 @@ func main() {
 
 	/* GRPC Client */
 
-	GRPCUser, err := clientGRPC.NewGRPCUser(cfg)
+	GRPCUser, err := grpc.NewGRPCUser(cfg)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -39,7 +39,7 @@ func main() {
 
 	/* MQTT Client */
 
-	MQTTUser, err := clientMQTT.NewMQTTUser(cfg)
+	MQTTUser, err := mqtt.NewMQTTUser(cfg)
 	if err != nil {
 		log.Fatal(err)
 	}

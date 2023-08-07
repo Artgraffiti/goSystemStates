@@ -39,7 +39,7 @@ func unloadUserMetricStorageToGlobalMetricStorage(data metrics.UserMetricStorage
 	return
 }
 
-func (server *Server) UploadMetrics(ctx *fiber.Ctx) (err error) {
+func (server *HTTPServer) UploadMetrics(ctx *fiber.Ctx) (err error) {
 	var request metrics.UserMetricStorage
 
 	if err := ctx.BodyParser(&request); err != nil {
@@ -50,7 +50,7 @@ func (server *Server) UploadMetrics(ctx *fiber.Ctx) (err error) {
 	return
 }
 
-func (server *Server) MetricsByUUID(ctx *fiber.Ctx) (err error) {
+func (server *HTTPServer) MetricsByUUID(ctx *fiber.Ctx) (err error) {
 	userUUID, err := uuid.Parse(ctx.Params("uuid"))
 	if err != nil {
 		return
@@ -59,6 +59,6 @@ func (server *Server) MetricsByUUID(ctx *fiber.Ctx) (err error) {
 	return ctx.JSON(storage.GlobalMetricStorage[userUUID])
 }
 
-func (server *Server) GetUsersMetrics(ctx *fiber.Ctx) (err error) {
+func (server *HTTPServer) GetUsersMetrics(ctx *fiber.Ctx) (err error) {
 	return ctx.JSON(storage.GlobalMetricStorage)
 }

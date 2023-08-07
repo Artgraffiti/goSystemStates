@@ -24,7 +24,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	HTTPServer := http.NewServer(cfg)
+	HTTPServer := http.NewHTTPServer(cfg)
 	MQTTServer := mqtt.NewMQTTServer(cfg)
 	GRPCServer := grpc.NewGRPCServer(cfg)
 
